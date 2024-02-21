@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
 import { BasicProduct, Product } from '@angular-monorepo/api-interfaces';
+import {HttpException, HttpStatus} from "@nestjs/common";
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {

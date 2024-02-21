@@ -9,7 +9,7 @@ import {RouterLink} from "@angular/router";
 import {MatCardModule} from "@angular/material/card";
 import {AsyncPipe, CommonModule} from "@angular/common";
 import {Store} from "@ngrx/store";
-import {pageIsOpenedAction} from "../+state/actions";
+import {pageIsOpened} from "../+state/actions";
 import {GlobalState} from "../+state/product.reducer";
 import {selectProducts} from "../+state/product.selectors";
 import {ProductModel} from "../../model/product";
@@ -36,7 +36,7 @@ export class ProductListComponent implements OnInit {
     private readonly ratingService: RatingService,
     private readonly store: Store<GlobalState>
   ) {
-    this.store.dispatch(pageIsOpenedAction());
+    this.store.dispatch(pageIsOpened());
   }
 
   ngOnInit() {
