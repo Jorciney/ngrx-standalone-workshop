@@ -1,16 +1,18 @@
-import { Component, OnInit } from "@angular/core";
-import { map, Observable, shareReplay } from "rxjs";
+import {Component, OnInit} from "@angular/core";
+import {map, Observable, shareReplay} from "rxjs";
 
-import { Rating } from "@angular-monorepo/api-interfaces";
-import { RatingService } from "../rating.service";
-
-import { ProductModel } from "../../model/product";
-import { ProductService } from "../product.service";
-import { StarsComponent } from "../../common/stars/stars.component";
-import { SpinnerComponent } from "../../common/spinner/spinner.component";
-import { RouterLink } from "@angular/router";
-import { MatCardModule } from "@angular/material/card";
-import { AsyncPipe, CommonModule } from "@angular/common";
+import {Rating} from "@angular-monorepo/api-interfaces";
+import {RatingService} from "../rating.service";
+import {StarsComponent} from "../../common/stars/stars.component";
+import {SpinnerComponent} from "../../common/spinner/spinner.component";
+import {RouterLink} from "@angular/router";
+import {MatCardModule} from "@angular/material/card";
+import {AsyncPipe, CommonModule} from "@angular/common";
+import {Store} from "@ngrx/store";
+import {pageIsOpenedAction} from "../+state/actions";
+import {GlobalState} from "../+state/product.reducer";
+import {selectProducts} from "../+state/product.selectors";
+import {ProductModel} from "../../model/product";
 
 @Component({
   selector: "ngrx-workshop-home",
@@ -27,16 +29,17 @@ import { AsyncPipe, CommonModule } from "@angular/common";
   ],
 })
 export class ProductListComponent implements OnInit {
-  products$?: Observable<ProductModel[]>;
+  products$?: Observable<ProductModel[] | undefined> = this.store.select(selectProducts);
   customerRatings$?: Observable<{ [productId: string]: Rating }>;
 
   constructor(
-    private readonly productService: ProductService,
-    private readonly ratingService: RatingService
-  ) {}
+    private readonly ratingService: RatingService,
+    private readonly store: Store<GlobalState>
+  ) {
+    this.store.dispatch(pageIsOpenedAction());
+  }
 
   ngOnInit() {
-    this.products$ = this.productService.getProducts();
 
     this.customerRatings$ = this.ratingService.getRatings().pipe(
       map((ratingsArray) =>
