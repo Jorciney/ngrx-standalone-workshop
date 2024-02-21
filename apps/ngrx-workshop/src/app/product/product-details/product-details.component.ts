@@ -1,23 +1,18 @@
-import {
-  AsyncPipe,
-  CommonModule,
-  CurrencyPipe,
-  Location,
-} from "@angular/common";
-import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { Rating } from "@angular-monorepo/api-interfaces";
-import { BehaviorSubject, filter, map, shareReplay, switchMap } from "rxjs";
-
-import { CartService } from "../../cart/cart.service";
-import { ProductService } from "../product.service";
-import { RatingService } from "../rating.service";
-import { MatButtonModule } from "@angular/material/button";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { StarsComponent } from "../../common/stars/stars.component";
-import { SpinnerComponent } from "../../common/spinner/spinner.component";
-import { MatCardModule } from "@angular/material/card";
-import { ReviewsComponent } from "./reviews/reviews.component";
+import {AsyncPipe, CommonModule, CurrencyPipe, Location,} from "@angular/common";
+import {ChangeDetectionStrategy, Component} from "@angular/core";
+import {ActivatedRoute, ParamMap} from "@angular/router";
+import {Rating} from "@angular-monorepo/api-interfaces";
+import {BehaviorSubject, filter, map, shareReplay, switchMap} from "rxjs";
+import {ProductService} from "../product.service";
+import {RatingService} from "../rating.service";
+import {MatButtonModule} from "@angular/material/button";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {StarsComponent} from "../../common/stars/stars.component";
+import {SpinnerComponent} from "../../common/spinner/spinner.component";
+import {MatCardModule} from "@angular/material/card";
+import {ReviewsComponent} from "./reviews/reviews.component";
+import {Store} from "@ngrx/store";
+import {productDetailsActions} from "../../cart/+state/cart.actions";
 
 @Component({
   selector: "ngrx-workshop-product-details",
@@ -41,7 +36,7 @@ export class ProductDetailsComponent {
   readonly productId$ = this.router.paramMap.pipe(
     map((params: ParamMap) => params.get("productId")),
     filter((id: string | null): id is string => id != null),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({bufferSize: 1, refCount: true})
   );
 
   readonly product$ = this.productId$.pipe(
@@ -56,8 +51,8 @@ export class ProductDetailsComponent {
     private readonly router: ActivatedRoute,
     private readonly productService: ProductService,
     private readonly ratingService: RatingService,
-    private readonly cartService: CartService,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly store: Store
   ) {
     this.productId$
       .pipe(switchMap((id) => this.ratingService.getRating(id)))
@@ -68,7 +63,7 @@ export class ProductDetailsComponent {
 
   setRating(productId: string, rating: Rating) {
     this.ratingService
-      .setRating({ productId, rating })
+      .setRating({productId, rating})
       .pipe(
         map((arr) =>
           arr.find((productRating) => productId === productRating.productId)
@@ -83,7 +78,7 @@ export class ProductDetailsComponent {
   }
 
   addToCart(productId: string) {
-    this.cartService.addProduct(productId);
+    this.store.dispatch(productDetailsActions.addToCart({productId}));
   }
 
   back() {

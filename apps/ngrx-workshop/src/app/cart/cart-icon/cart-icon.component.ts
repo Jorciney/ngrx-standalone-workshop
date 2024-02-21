@@ -6,6 +6,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { RouterLink } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
+import {selectCartItemsCount} from "../+state/card.selector";
+import {Store} from "@ngrx/store";
 
 @Component({
   selector: "ngrx-workshop-cart",
@@ -22,13 +24,9 @@ import { AsyncPipe } from "@angular/common";
   `,
 })
 export class CartIconComponent {
-  cartItemsCounter$ = this.cartService.cartItems$.pipe(
-    map((cartItems) =>
-      cartItems.reduce((acc, { quantity }) => acc + quantity, 0)
-    )
-  );
+  cartItemsCounter$ = this.store.select(selectCartItemsCount);
 
-  constructor(private readonly cartService: CartService) {
+  constructor(private readonly cartService: CartService, private readonly store: Store) {
     this.cartService.getCartProducts();
   }
 }
