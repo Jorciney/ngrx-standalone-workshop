@@ -3,9 +3,10 @@ import {Actions, concatLatestFrom, createEffect, ofType} from "@ngrx/effects";
 import {ProductService} from "../product.service";
 import * as productActions from './actions';
 import {productApiActions} from './actions';
-import {catchError, exhaustMap, filter, map, of, switchMap} from "rxjs";
+import {catchError, exhaustMap, filter, from, map, mergeMap, of, switchMap} from "rxjs";
 import {selectCurrentProductId} from "./product.selectors";
 import {Store} from "@ngrx/store";
+import {timerEffectsActions} from "../../cart/+state/cart.actions";
 
 @Injectable()
 export class ProductEffects {
@@ -47,4 +48,16 @@ export class ProductEffects {
       )),
     )
   });
+  fetchCardDetailsProducts$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(timerEffectsActions.fetchCartItemsSuccess),
+      switchMap(({carts}) => from(carts).pipe(
+        mergeMap(({productId}) => this.productService.getProduct(productId).pipe(
+            map(product => productApiActions.singleProductFetchedSuccess({product})),
+            catchError(() => of(productApiActions.singleProductFetchedError({error: 'Error fetching single product'}))
+            )
+          )
+        ))
+      ))
+  })
 }

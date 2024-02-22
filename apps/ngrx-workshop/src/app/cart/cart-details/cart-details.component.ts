@@ -10,10 +10,13 @@ import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AsyncPipe, CommonModule, CurrencyPipe } from "@angular/common";
-import {Store} from "@ngrx/store";
-import {selectCartItems} from "../+state/card.selector";
+import {createSelector, Store} from "@ngrx/store";
+import {selectCartItems, selectCartProducts, selectCartTotal} from "../+state/card.selector";
 import {cartDetailsActions} from "../+state/cart.actions";
-
+export const cartDetailsVm = createSelector({
+  products: selectCartProducts,
+  total: selectCartTotal,
+});
 @Component({
   selector: "ngrx-workshop-cart-details",
   standalone: true,
@@ -31,29 +34,10 @@ import {cartDetailsActions} from "../+state/cart.actions";
   ],
 })
 export class CartDetailsComponent {
-  cartProducts$: Observable<CartProduct[]> =  this.store.select(selectCartItems).pipe(
-    switchMap((cartItems) =>
-      from(cartItems).pipe(
-        mergeMap((item) =>
-          this.productService
-            .getProduct(item.productId)
-            .pipe(map((product) => ({ ...product, quantity: item.quantity })))
-        ),
-        toArray()
-      )
-    )
-  );
-
-  total$ = this.cartProducts$.pipe(
-    map(
-      (cartProducts) =>
-        cartProducts &&
-        cartProducts.reduce(
-          (acc, product) => acc + product.price * product.quantity,
-          0
-        )
-    )
-  );
+  cartDetailsVm$: Observable<{
+    products?: CartProduct[];
+    total?: number;
+  }> = this.store.select(cartDetailsVm);
 
   constructor(
     private readonly cartService: CartService,
