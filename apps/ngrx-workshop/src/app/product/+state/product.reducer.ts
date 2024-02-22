@@ -3,11 +3,13 @@ import * as productActions from "./actions";
 import {ProductModel} from "../../model/product";
 import {data} from "@angular-monorepo/mock-data";
 import {createEntityAdapter, EntityAdapter, EntityState} from "@ngrx/entity";
+import {LoadingStatus, RequestStatus} from "../../shared/request-status";
 
 export interface ProductState {
   isPageOpen: boolean;
   products: EntityState<ProductModel>;
   error: string | undefined;
+  productsRequestStatus: RequestStatus
 }
 
 export const productAdapter: EntityAdapter<ProductModel> = createEntityAdapter({
@@ -17,7 +19,8 @@ export const productAdapter: EntityAdapter<ProductModel> = createEntityAdapter({
 const initState: ProductState = {
   products: productAdapter.getInitialState(),
   isPageOpen: false,
-  error: undefined
+  error: undefined,
+  productsRequestStatus: LoadingStatus.IDLE
 };
 
 export const productFeatureReducer = createFeature({
@@ -27,6 +30,7 @@ export const productFeatureReducer = createFeature({
       return ({
         ...state,
         products: productAdapter.upsertMany(data, state.products),
+        productsRequestStatus: LoadingStatus.LOADING,
         isPageOpen: true
       })
     }),
@@ -34,19 +38,22 @@ export const productFeatureReducer = createFeature({
         return ({
           ...state,
           products: productAdapter.upsertMany(products, state.products),
+          productsRequestStatus: LoadingStatus.FULLFILLED
         })
       }
     ),
     on(productActions.productApiActions.productFetchedError, (state, {error}) => ({
         ...state,
         products: productAdapter.removeAll(state.products),
-        error
+        error,
+      productsRequestStatus: {error}
       })
     ),
     on(productActions.productApiActions.singleProductFetchedSuccess, (state, { product }) => {
       return {
         ...state,
         products: productAdapter.upsertOne(product, state.products),
+        productsRequestStatus: LoadingStatus.FULLFILLED
       };
     })
   )

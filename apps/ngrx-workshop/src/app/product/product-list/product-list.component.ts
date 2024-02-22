@@ -8,11 +8,17 @@ import {SpinnerComponent} from "../../common/spinner/spinner.component";
 import {RouterLink} from "@angular/router";
 import {MatCardModule} from "@angular/material/card";
 import {AsyncPipe, CommonModule} from "@angular/common";
-import {Store} from "@ngrx/store";
+import {createSelector, Store} from "@ngrx/store";
 import {pageIsOpened} from "../+state/actions";
-import {selectProducts} from "../+state/product.selectors";
+import {selectProducts, selectProductsStatus} from "../+state/product.selectors";
 import {ProductModel} from "../../model/product";
 import {ProductState} from "../+state/product.reducer";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+
+export const selectProdutListVm = createSelector({
+  products: selectProducts,
+  productsRequestStatus: selectProductsStatus,
+});
 
 @Component({
   selector: "ngrx-workshop-home",
@@ -26,10 +32,11 @@ import {ProductState} from "../+state/product.reducer";
     RouterLink,
     SpinnerComponent,
     AsyncPipe,
+    MatProgressBarModule,
   ],
 })
 export class ProductListComponent implements OnInit {
-  products$?: Observable<ProductModel[] | undefined> = this.store.select(selectProducts);
+  productListVm$ = this.store.select(selectProdutListVm);
   customerRatings$?: Observable<{ [productId: string]: Rating }>;
 
   constructor(

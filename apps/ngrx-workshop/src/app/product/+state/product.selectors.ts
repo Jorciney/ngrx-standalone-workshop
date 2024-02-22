@@ -25,3 +25,4 @@ export const selectCurrentProduct = createSelector(
     return products[productId];
   }
 );
+export const selectProductsStatus = createSelector(productFeatureReducer.selectProductState, (state) => state.productsRequestStatus);
