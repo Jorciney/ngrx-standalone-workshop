@@ -12,7 +12,8 @@ import {SpinnerComponent} from "../../common/spinner/spinner.component";
 import {MatCardModule} from "@angular/material/card";
 import {ReviewsComponent} from "./reviews/reviews.component";
 import {Store} from "@ngrx/store";
-import {productDetailsActions} from "../../cart/+state/cart.actions";
+import {selectCurrentProduct} from "../+state/product.selectors";
+import {productDetailsActions} from "../+state/actions";
 
 @Component({
   selector: "ngrx-workshop-product-details",
@@ -39,9 +40,7 @@ export class ProductDetailsComponent {
     shareReplay({bufferSize: 1, refCount: true})
   );
 
-  readonly product$ = this.productId$.pipe(
-    switchMap((id) => this.productService.getProduct(id))
-  );
+  readonly product$ = this.store.select(selectCurrentProduct);
 
   protected customerRating$ = new BehaviorSubject<number | undefined>(
     undefined
@@ -54,6 +53,7 @@ export class ProductDetailsComponent {
     private readonly location: Location,
     private readonly store: Store
   ) {
+    this.store.dispatch(productDetailsActions.pageOpened());
     this.productId$
       .pipe(switchMap((id) => this.ratingService.getRating(id)))
       .subscribe((productRating) =>

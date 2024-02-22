@@ -38,6 +38,22 @@ export const productFeatureReducer = createFeature({
         products: [],
         error
       })
-    )
+    ),
+    on(productActions.productApiActions.singleProductFetchedSuccess, (state, { product }) => {
+      const productsClone = state.products ? [...state.products] : [];
+      const indexOfProduct = productsClone.findIndex(
+        (p) => p.id === product.id
+      );
+      // Remove old one and replace with a single product fetched
+      if (indexOfProduct < 0) {
+        productsClone.push(product);
+      } else {
+        productsClone.splice(indexOfProduct, 1, product);
+      }
+      return {
+        ...state,
+        products: productsClone,
+      };
+    })
   )
 });

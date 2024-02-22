@@ -1,4 +1,4 @@
-import {createAction, createActionGroup, props} from "@ngrx/store";
+import {createAction, createActionGroup, emptyProps, props} from "@ngrx/store";
 import {BasicProduct} from "@angular-monorepo/api-interfaces";
 
 export const pageIsOpened = createAction('[Product Page] Opened')
@@ -10,7 +10,9 @@ export const productApiActions = createActionGroup({
   source: 'Product API',
   events: {
     productFetchedSuccess: props<{ products: BasicProduct[] }>(),
-    productFetchedError: props<{ error: string }>()
+    productFetchedError: props<{ error: string }>(),
+    singleProductFetchedSuccess: props<{ product: BasicProduct }>(),
+    singleProductFetchedError: props<{ error: string }>()
   }
 })
 
@@ -18,5 +20,6 @@ export const productDetailsActions = createActionGroup({
   source: 'Product Details Page',
   events: {
     addToCart: props<{ productId: string }>(),
+    pageOpened: emptyProps()
   }
 })
