@@ -2,19 +2,23 @@ import {createFeature, createReducer, on} from "@ngrx/store";
 import * as productActions from "./actions";
 import {ProductModel} from "../../model/product";
 import {data} from "@angular-monorepo/mock-data";
+import {createEntityAdapter, EntityAdapter, EntityState} from "@ngrx/entity";
 
 export interface ProductState {
   isPageOpen: boolean;
-  products: ProductModel[] | undefined;
+  products: EntityState<ProductModel>;
   error: string | undefined;
 }
 
+export const productAdapter: EntityAdapter<ProductModel> = createEntityAdapter({
+  selectId: (product: ProductModel) => product.id
+});
+
 const initState: ProductState = {
-  products: undefined,
+  products: productAdapter.getInitialState(),
   isPageOpen: false,
   error: undefined
 };
-
 
 export const productFeatureReducer = createFeature({
   name: 'product',
@@ -22,37 +26,27 @@ export const productFeatureReducer = createFeature({
     on(productActions.pageIsOpened, state => {
       return ({
         ...state,
-        products: [...data],
+        products: productAdapter.upsertMany(data, state.products),
         isPageOpen: true
       })
     }),
     on(productActions.productApiActions.productFetchedSuccess, (state, {products}) => {
         return ({
           ...state,
-          products
+          products: productAdapter.upsertMany(products, state.products),
         })
       }
     ),
     on(productActions.productApiActions.productFetchedError, (state, {error}) => ({
         ...state,
-        products: [],
+        products: productAdapter.removeAll(state.products),
         error
       })
     ),
     on(productActions.productApiActions.singleProductFetchedSuccess, (state, { product }) => {
-      const productsClone = state.products ? [...state.products] : [];
-      const indexOfProduct = productsClone.findIndex(
-        (p) => p.id === product.id
-      );
-      // Remove old one and replace with a single product fetched
-      if (indexOfProduct < 0) {
-        productsClone.push(product);
-      } else {
-        productsClone.splice(indexOfProduct, 1, product);
-      }
       return {
         ...state,
-        products: productsClone,
+        products: productAdapter.upsertOne(product, state.products),
       };
     })
   )
