@@ -11,6 +11,7 @@ import {provideEffects} from "@ngrx/effects";
 import * as handleFetchError from "./app/product/+state/error.effects";
 import {ProductEffects} from "./app/product/+state/product.effects";
 import {CART_FEATURE_KEY, cardReducer} from "./app/cart/+state/cart.reducer";
+import * as cartEffects from "./app/cart/+state/cart.effects";
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -18,6 +19,6 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(), provideAnimations(),
     provideStore({product: productReducer}),
     provideState(CART_FEATURE_KEY,cardReducer ),
-    provideEffects(ProductEffects, handleFetchError),
+    provideEffects(ProductEffects, handleFetchError, cartEffects),
     provideStoreDevtools()],
 });
