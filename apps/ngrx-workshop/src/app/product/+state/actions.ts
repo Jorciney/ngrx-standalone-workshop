@@ -13,3 +13,10 @@ export const productApiActions = createActionGroup({
     productFetchedError: props<{ error: string }>()
   }
 })
+
+export const productDetailsActions = createActionGroup({
+  source: 'Product Details Page',
+  events: {
+    addToCart: props<{ productId: string }>(),
+  }
+})

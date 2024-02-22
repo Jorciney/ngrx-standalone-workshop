@@ -24,3 +24,10 @@ export const cartDetailsActions = createActionGroup({
     purchaseSuccess: emptyProps(),
   },
 });
+export const cartActions = createActionGroup({
+  source: "Cart",
+  events: {
+    addToCartSuccess: emptyProps(),
+    addToCartError: props<{ productId: string, error: string }>(),
+  },
+});

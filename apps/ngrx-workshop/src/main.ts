@@ -8,7 +8,7 @@ import {provideState, provideStore} from "@ngrx/store";
 import {productReducer} from "./app/product/+state/product.reducer";
 import {provideStoreDevtools} from "@ngrx/store-devtools";
 import {provideEffects} from "@ngrx/effects";
-import * as handleFetchError from "./app/product/+state/error.effects";
+import * as handleFetchError from "./app/error.effects";
 import {ProductEffects} from "./app/product/+state/product.effects";
 import {CART_FEATURE_KEY, cardReducer} from "./app/cart/+state/cart.reducer";
 import * as cartEffects from "./app/cart/+state/cart.effects";
