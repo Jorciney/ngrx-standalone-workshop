@@ -10,9 +10,9 @@ import {MatCardModule} from "@angular/material/card";
 import {AsyncPipe, CommonModule} from "@angular/common";
 import {Store} from "@ngrx/store";
 import {pageIsOpened} from "../+state/actions";
-import {GlobalState} from "../+state/product.reducer";
 import {selectProducts} from "../+state/product.selectors";
 import {ProductModel} from "../../model/product";
+import {ProductState} from "../+state/product.reducer";
 
 @Component({
   selector: "ngrx-workshop-home",
@@ -34,7 +34,7 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private readonly ratingService: RatingService,
-    private readonly store: Store<GlobalState>
+    private readonly store: Store<ProductState>
   ) {
     this.store.dispatch(pageIsOpened());
   }

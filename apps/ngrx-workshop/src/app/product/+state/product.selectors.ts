@@ -1,13 +1,9 @@
-import {GlobalState} from "./product.reducer";
+import {createSelector} from "@ngrx/store";
+import {productFeatureReducer} from "./product.reducer";
 
-export function selectProductState(state: GlobalState) {
-    return state.product;
-}
+export const selectProducts = createSelector(
+  productFeatureReducer.selectProductState, // automatically created for us in the reducer
+  (state) => state.products
+);
 
-export function selectProducts(state: GlobalState) {
-    return state.product.products;
-}
-
-export function selectIsPageOpen(state: GlobalState) {
-    return selectProductState(state).isPageOpen;
-}
+export const selectIsPageOpen = createSelector(productFeatureReducer.selectProductState, (state) => state.isPageOpen);
